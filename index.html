@@ -761,6 +761,7 @@
           // Insert job record - adjust fields based on your table schema
           const { error: insertError } = await supabase.from("jobs").insert({
             file_url: fileUrl,
+            printer_id: printerId,
             status: "pending"
             // Note: If your table has file_name, file_size, file_type columns, uncomment below:
             // file_name: file.name,
