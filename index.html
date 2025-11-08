@@ -2,48 +2,103 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <title>PrintHub – Upload &amp; Print</title>
   <script type="module" src="https://esm.sh/@supabase/supabase-js@2"></script>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      min-height: 100vh;
       margin: 0;
       padding: 1rem;
-      background: linear-gradient(180deg, #f7f7f7, #eaeaea);
+      background: #212121;
+      color: #e1e1e1;
     }
 
     h1 {
       font-size: 1.5rem;
       margin-bottom: 1rem;
+      color: #ffffff;
     }
 
     .container {
       width: 100%;
       max-width: 800px;
-      background: #fff;
+      background: #181818;
       border-radius: 12px;
-      padding: 2rem;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      border: 1px solid #2b2b2b;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 0.5rem;
+        min-height: -webkit-fill-available;
+      }
+
+      .container {
+        padding: 1rem;
+        border-radius: 8px;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      h1 {
+        font-size: 1.25rem;
+        margin-bottom: 0.75rem;
+      }
+
+      input[type="file"] {
+        padding: 0.875rem;
+        font-size: 0.9rem;
+      }
+    }
+
+    /* iPhone specific fixes */
+    @supports (-webkit-touch-callout: none) {
+      body {
+        min-height: -webkit-fill-available;
+      }
     }
 
     input[type="file"] {
-      border: 2px dashed #ccc;
+      border: 2px dashed #404040;
       border-radius: 10px;
       padding: 1rem;
       width: 100%;
-      background: #f9f9f9;
+      background: #2b2b2b;
       cursor: pointer;
+      color: #e1e1e1;
+      transition: all 0.2s;
     }
 
     input[type="file"]:hover {
-      border-color: #007aff;
-      background: #f0f7ff;
+      border-color: #3390ec;
+      background: #333333;
+    }
+
+    input[type="file"]::-webkit-file-upload-button {
+      background: #3390ec;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-right: 1rem;
+      font-weight: 500;
+    }
+
+    input[type="file"]::-webkit-file-upload-button:hover {
+      background: #2d7fd6;
     }
 
     button {
@@ -51,16 +106,17 @@
       padding: 0.8rem 2rem;
       border: none;
       border-radius: 10px;
-      background: #007aff;
+      background: #3390ec;
       color: #fff;
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
       transition: background 0.2s;
+      width: 100%;
     }
 
     button:hover:not(:disabled) {
-      background: #0056cc;
+      background: #2d7fd6;
     }
 
     button:disabled {
@@ -68,9 +124,16 @@
       cursor: not-allowed;
     }
 
+    @media (max-width: 480px) {
+      button {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.95rem;
+      }
+    }
+
     #status {
       margin-top: 1rem;
-      color: #444;
+      color: #b0b0b0;
       font-size: 0.9rem;
       min-height: 1.5rem;
     }
@@ -78,16 +141,28 @@
     #previewContainer {
       margin-top: 1.5rem;
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       gap: 1rem;
     }
 
+    @media (max-width: 480px) {
+      #previewContainer {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 0.75rem;
+      }
+    }
+
     .preview-item {
-      border: 1px solid #ddd;
+      border: 1px solid #404040;
       border-radius: 8px;
       padding: 0.5rem;
-      background: #f9f9f9;
+      background: #2b2b2b;
       position: relative;
+      transition: border-color 0.2s;
+    }
+
+    .preview-item:hover {
+      border-color: #505050;
     }
 
     .preview-item img {
@@ -95,7 +170,13 @@
       height: 200px;
       object-fit: contain;
       border-radius: 4px;
-      background: #fff;
+      background: #1e1e1e;
+    }
+
+    @media (max-width: 480px) {
+      .preview-item img {
+        height: 150px;
+      }
     }
 
     .preview-item iframe {
@@ -103,13 +184,19 @@
       height: 200px;
       border: none;
       border-radius: 4px;
-      background: #fff;
+      background: #1e1e1e;
+    }
+
+    @media (max-width: 480px) {
+      .preview-item iframe {
+        height: 150px;
+      }
     }
 
     .preview-item .file-info {
       margin-top: 0.5rem;
       font-size: 0.85rem;
-      color: #666;
+      color: #b0b0b0;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -120,7 +207,7 @@
       position: absolute;
       top: 0.5rem;
       right: 0.5rem;
-      background: rgba(255, 0, 0, 0.8);
+      background: rgba(244, 67, 54, 0.9);
       color: white;
       border: none;
       border-radius: 50%;
@@ -132,10 +219,11 @@
       align-items: center;
       justify-content: center;
       padding: 0;
+      transition: background 0.2s;
     }
 
     .preview-item .remove-btn:hover {
-      background: rgba(255, 0, 0, 1);
+      background: rgba(244, 67, 54, 1);
     }
 
     .pdf-placeholder {
@@ -144,15 +232,23 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #fff;
+      background: #1e1e1e;
       border-radius: 4px;
-      color: #666;
+      color: #b0b0b0;
       font-size: 0.9rem;
     }
 
+    @media (max-width: 480px) {
+      .pdf-placeholder {
+        height: 150px;
+        font-size: 0.8rem;
+      }
+    }
+
     .error-message {
-      color: #d32f2f;
-      background: #ffebee;
+      color: #ff6b6b;
+      background: rgba(244, 67, 54, 0.15);
+      border: 1px solid rgba(244, 67, 54, 0.3);
       padding: 0.75rem;
       border-radius: 6px;
       margin-top: 0.5rem;
@@ -160,8 +256,9 @@
     }
 
     .success-message {
-      color: #2e7d32;
-      background: #e8f5e9;
+      color: #4caf50;
+      background: rgba(76, 175, 80, 0.15);
+      border: 1px solid rgba(76, 175, 80, 0.3);
       padding: 0.75rem;
       border-radius: 6px;
       margin-top: 0.5rem;
@@ -175,7 +272,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.7);
       display: none;
       align-items: center;
       justify-content: center;
@@ -188,14 +285,15 @@
     }
 
     .loader-container {
-      background: white;
+      background: #181818;
+      border: 1px solid #2b2b2b;
       border-radius: 16px;
       padding: 2rem;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 1.5rem;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
       max-width: 300px;
       text-align: center;
       margin: 1rem;
@@ -205,14 +303,15 @@
       .loader-container {
         padding: 1.5rem;
         max-width: calc(100% - 2rem);
+        margin: 0.5rem;
       }
     }
 
     .spinner {
       width: 50px;
       height: 50px;
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #007aff;
+      border: 4px solid #404040;
+      border-top: 4px solid #3390ec;
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
@@ -224,14 +323,14 @@
 
     .loader-text {
       font-size: 1rem;
-      color: #333;
+      color: #e1e1e1;
       font-weight: 500;
     }
 
     .loader-progress {
       width: 100%;
       height: 6px;
-      background: #f0f0f0;
+      background: #2b2b2b;
       border-radius: 3px;
       overflow: hidden;
     }
@@ -240,9 +339,9 @@
       height: 100%;
       background: linear-gradient(
         90deg,
-        #007aff 0%,
-        #00a8ff 50%,
-        #007aff 100%
+        #3390ec 0%,
+        #2d7fd6 50%,
+        #3390ec 100%
       );
       background-size: 200% 100%;
       border-radius: 3px;
@@ -270,21 +369,24 @@
 
     @media (max-width: 480px) {
       .toast-container {
-        left: 20px;
-        right: 20px;
+        left: 10px;
+        right: 10px;
+        top: 10px;
         max-width: none;
       }
 
       .toast {
         min-width: auto;
+        padding: 0.875rem 1.25rem;
       }
     }
 
     .toast {
-      background: white;
+      background: #181818;
+      border: 1px solid #2b2b2b;
       border-radius: 12px;
       padding: 1rem 1.5rem;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
       display: flex;
       align-items: center;
       gap: 1rem;
@@ -344,12 +446,12 @@
       font-weight: 600;
       font-size: 1rem;
       margin-bottom: 0.25rem;
-      color: #333;
+      color: #ffffff;
     }
 
     .toast-message {
       font-size: 0.9rem;
-      color: #666;
+      color: #b0b0b0;
     }
 
     .toast-close {
@@ -369,8 +471,8 @@
     }
 
     .toast-close:hover {
-      background: #f0f0f0;
-      color: #333;
+      background: #2b2b2b;
+      color: #e1e1e1;
     }
 
     button.loading {
