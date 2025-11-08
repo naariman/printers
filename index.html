@@ -23,13 +23,27 @@
       margin-bottom: 1rem;
     }
 
-    input[type="file"] {
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      padding: 0.75rem;
+    .container {
       width: 100%;
-      max-width: 320px;
+      max-width: 800px;
       background: #fff;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    input[type="file"] {
+      border: 2px dashed #ccc;
+      border-radius: 10px;
+      padding: 1rem;
+      width: 100%;
+      background: #f9f9f9;
+      cursor: pointer;
+    }
+
+    input[type="file"]:hover {
+      border-color: #007aff;
+      background: #f0f7ff;
     }
 
     button {
@@ -42,6 +56,11 @@
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover:not(:disabled) {
+      background: #0056cc;
     }
 
     button:disabled {
@@ -53,14 +72,350 @@
       margin-top: 1rem;
       color: #444;
       font-size: 0.9rem;
+      min-height: 1.5rem;
+    }
+
+    #previewContainer {
+      margin-top: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .preview-item {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 0.5rem;
+      background: #f9f9f9;
+      position: relative;
+    }
+
+    .preview-item img {
+      width: 100%;
+      height: 200px;
+      object-fit: contain;
+      border-radius: 4px;
+      background: #fff;
+    }
+
+    .preview-item iframe {
+      width: 100%;
+      height: 200px;
+      border: none;
+      border-radius: 4px;
+      background: #fff;
+    }
+
+    .preview-item .file-info {
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      color: #666;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
+    }
+
+    .preview-item .remove-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: rgba(255, 0, 0, 0.8);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .preview-item .remove-btn:hover {
+      background: rgba(255, 0, 0, 1);
+    }
+
+    .pdf-placeholder {
+      width: 100%;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      border-radius: 4px;
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .error-message {
+      color: #d32f2f;
+      background: #ffebee;
+      padding: 0.75rem;
+      border-radius: 6px;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .success-message {
+      color: #2e7d32;
+      background: #e8f5e9;
+      padding: 0.75rem;
+      border-radius: 6px;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    /* Loader styles */
+    .loader-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(4px);
+    }
+
+    .loader-overlay.active {
+      display: flex;
+    }
+
+    .loader-container {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      max-width: 300px;
+      text-align: center;
+      margin: 1rem;
+    }
+
+    @media (max-width: 480px) {
+      .loader-container {
+        padding: 1.5rem;
+        max-width: calc(100% - 2rem);
+      }
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #007aff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loader-text {
+      font-size: 1rem;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .loader-progress {
+      width: 100%;
+      height: 6px;
+      background: #f0f0f0;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .loader-progress-bar {
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        #007aff 0%,
+        #00a8ff 50%,
+        #007aff 100%
+      );
+      background-size: 200% 100%;
+      border-radius: 3px;
+      transition: width 0.3s ease;
+      width: 0%;
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Toast notification styles */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 400px;
+    }
+
+    @media (max-width: 480px) {
+      .toast-container {
+        left: 20px;
+        right: 20px;
+        max-width: none;
+      }
+
+      .toast {
+        min-width: auto;
+      }
+    }
+
+    .toast {
+      background: white;
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      animation: slideIn 0.3s ease-out;
+      border-left: 4px solid;
+      min-width: 300px;
+    }
+
+    .toast.success {
+      border-left-color: #4caf50;
+    }
+
+    .toast.error {
+      border-left-color: #f44336;
+    }
+
+    .toast.warning {
+      border-left-color: #ff9800;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+    }
+
+    .toast.hiding {
+      animation: slideOut 0.3s ease-in forwards;
+    }
+
+    .toast-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .toast-content {
+      flex: 1;
+    }
+
+    .toast-title {
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 0.25rem;
+      color: #333;
+    }
+
+    .toast-message {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .toast-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: #999;
+      cursor: pointer;
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+
+    .toast-close:hover {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    button.loading {
+      position: relative;
+      color: transparent;
+    }
+
+    button.loading::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 50%;
+      left: 50%;
+      margin-left: -10px;
+      margin-top: -10px;
+      border: 2px solid #ffffff;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
     }
   </style>
 </head>
 <body>
-  <h1>📄 Upload for Printing</h1>
-  <input type="file" id="file" accept="application/pdf,image/*">
-  <button id="uploadBtn" type="button">Upload</button>
-  <div id="status"></div>
+  <!-- Loader Overlay -->
+  <div id="loaderOverlay" class="loader-overlay">
+    <div class="loader-container">
+      <div class="spinner"></div>
+      <div class="loader-text" id="loaderText">Загрузка файлов...</div>
+      <div class="loader-progress">
+        <div class="loader-progress-bar" id="loaderProgressBar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <div class="container">
+    <h1>📄 Upload for Printing</h1>
+    <input type="file" id="file" accept="application/pdf,image/*" multiple>
+    <div id="previewContainer"></div>
+    <button id="uploadBtn" type="button">Upload All Files</button>
+    <div id="status"></div>
+  </div>
 
   <script type="module">
     import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -73,47 +428,309 @@
     const statusEl = document.getElementById("status");
     const uploadBtn = document.getElementById("uploadBtn");
     const fileInput = document.getElementById("file");
+    const previewContainer = document.getElementById("previewContainer");
+    const loaderOverlay = document.getElementById("loaderOverlay");
+    const loaderText = document.getElementById("loaderText");
+    const loaderProgressBar = document.getElementById("loaderProgressBar");
+    const toastContainer = document.getElementById("toastContainer");
 
+    let selectedFiles = [];
+
+    // Function to show/hide loader
+    function showLoader(text = "Загрузка файлов...") {
+      loaderText.textContent = text;
+      loaderOverlay.classList.add("active");
+      loaderProgressBar.style.width = "0%";
+    }
+
+    function hideLoader() {
+      loaderOverlay.classList.remove("active");
+      loaderProgressBar.style.width = "0%";
+    }
+
+    function updateLoaderProgress(percent, text) {
+      loaderProgressBar.style.width = percent + "%";
+      if (text) {
+        loaderText.textContent = text;
+      }
+    }
+
+    // Function to show toast notification
+    function showToast(type, title, message, duration = 5000) {
+      const toast = document.createElement("div");
+      toast.className = `toast ${type}`;
+
+      const icons = {
+        success: "✅",
+        error: "❌",
+        warning: "⚠️"
+      };
+
+      toast.innerHTML = `
+        <div class="toast-icon">${icons[type] || "ℹ️"}</div>
+        <div class="toast-content">
+          <div class="toast-title">${title}</div>
+          ${message ? `<div class="toast-message">${message}</div>` : ""}
+        </div>
+        <button class="toast-close">×</button>
+      `;
+
+      const closeBtn = toast.querySelector(".toast-close");
+      closeBtn.addEventListener("click", () => {
+        toast.classList.add("hiding");
+        setTimeout(() => {
+          if (toast.parentElement) {
+            toast.remove();
+          }
+        }, 300);
+      });
+
+      toastContainer.appendChild(toast);
+
+      // Auto remove after duration
+      if (duration > 0) {
+        setTimeout(() => {
+          toast.classList.add("hiding");
+          setTimeout(() => {
+            if (toast.parentElement) {
+              toast.remove();
+            }
+          }, 300);
+        }, duration);
+      }
+
+      return toast;
+    }
+
+    // Function to show status message
+    function showStatus(message, isError = false) {
+      statusEl.innerHTML = `<div class="${isError ? 'error-message' : 'success-message'}">${message}</div>`;
+    }
+
+    // Function to create preview for a file
+    function createPreview(file, index) {
+      const previewItem = document.createElement("div");
+      previewItem.className = "preview-item";
+      previewItem.dataset.index = index;
+
+      const removeBtn = document.createElement("button");
+      removeBtn.className = "remove-btn";
+      removeBtn.textContent = "×";
+      removeBtn.title = "Remove";
+      removeBtn.onclick = () => removeFile(index);
+
+      const fileInfo = document.createElement("div");
+      fileInfo.className = "file-info";
+      fileInfo.textContent = file.name;
+      fileInfo.title = file.name; // Show full filename on hover
+
+      if (file.type.startsWith("image/")) {
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(file);
+        img.alt = file.name;
+        previewItem.appendChild(removeBtn);
+        previewItem.appendChild(img);
+        previewItem.appendChild(fileInfo);
+      } else if (file.type === "application/pdf") {
+        const pdfContainer = document.createElement("div");
+        pdfContainer.style.position = "relative";
+        pdfContainer.style.width = "100%";
+        pdfContainer.style.height = "200px";
+        
+        const pdfViewer = document.createElement("iframe");
+        const pdfUrl = URL.createObjectURL(file);
+        pdfViewer.src = pdfUrl + "#toolbar=0";
+        pdfViewer.style.width = "100%";
+        pdfViewer.style.height = "100%";
+        pdfViewer.style.border = "none";
+        pdfViewer.style.borderRadius = "4px";
+        pdfViewer.style.background = "#fff";
+        pdfViewer.onerror = () => {
+          pdfContainer.innerHTML = `<div class="pdf-placeholder">📄 PDF: ${file.name}<br><small>Click to download</small></div>`;
+          pdfContainer.onclick = () => {
+            const a = document.createElement("a");
+            a.href = pdfUrl;
+            a.download = file.name;
+            a.click();
+          };
+        };
+        
+        pdfContainer.appendChild(pdfViewer);
+        previewItem.appendChild(removeBtn);
+        previewItem.appendChild(pdfContainer);
+        previewItem.appendChild(fileInfo);
+      } else {
+        const placeholder = document.createElement("div");
+        placeholder.className = "pdf-placeholder";
+        placeholder.textContent = `📄 ${file.name}`;
+        previewItem.appendChild(removeBtn);
+        previewItem.appendChild(placeholder);
+        previewItem.appendChild(fileInfo);
+      }
+
+      return previewItem;
+    }
+
+    // Function to update previews
+    function updatePreviews() {
+      previewContainer.innerHTML = "";
+      selectedFiles.forEach((file, index) => {
+        const preview = createPreview(file, index);
+        previewContainer.appendChild(preview);
+      });
+
+      uploadBtn.disabled = selectedFiles.length === 0;
+      if (selectedFiles.length === 0) {
+        statusEl.innerHTML = "";
+      }
+    }
+
+    // Function to remove a file
+    function removeFile(index) {
+      selectedFiles.splice(index, 1);
+      updatePreviews();
+    }
+
+    // Handle file selection
+    fileInput.addEventListener("change", (e) => {
+      const files = Array.from(e.target.files);
+      if (files.length === 0) return;
+
+      selectedFiles = [...selectedFiles, ...files];
+      updatePreviews();
+      fileInput.value = ""; // Reset input to allow selecting the same file again
+    });
+
+    // Handle upload
     uploadBtn.addEventListener("click", async () => {
-      const file = fileInput.files?.[0];
-      if (!file) {
-        alert("Choose a file first");
+      if (selectedFiles.length === 0) {
+        showToast("warning", "Выберите файлы", "Пожалуйста, выберите хотя бы один файл для загрузки");
         return;
       }
 
       uploadBtn.disabled = true;
-      statusEl.textContent = "Uploading...";
+      uploadBtn.classList.add("loading");
+      showLoader(`Подготовка к загрузке ${selectedFiles.length} файл(ов)...`);
 
-      try {
-        const filePath = `jobs/${Date.now()}_${file.name}`;
-        const { data, error } = await supabase.storage
-          .from("print-files")
-          .upload(filePath, file);
+      let successCount = 0;
+      let errorCount = 0;
+      const errors = [];
 
-        if (error || !data) {
-          throw error ?? new Error("No data returned from Supabase");
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+        const progress = Math.round(((i + 1) / selectedFiles.length) * 100);
+        
+        try {
+          updateLoaderProgress(
+            Math.round((i / selectedFiles.length) * 100),
+            `Загрузка ${i + 1}/${selectedFiles.length}: ${file.name}`
+          );
+
+          // Sanitize filename for storage
+          const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
+          const filePath = `jobs/${Date.now()}_${i}_${sanitizedName}`;
+
+          // Upload to storage
+          const { data, error } = await supabase.storage
+            .from("print-files")
+            .upload(filePath, file, {
+              cacheControl: "3600",
+              upsert: false
+            });
+
+          if (error) {
+            console.error(`Upload error for ${file.name}:`, error);
+            errors.push(`${file.name}: ${error.message || JSON.stringify(error)}`);
+            errorCount++;
+            continue;
+          }
+
+          if (!data) {
+            throw new Error("No data returned from Supabase storage");
+          }
+
+          // Get public URL
+          const { data: publicUrlData } = supabase.storage
+            .from("print-files")
+            .getPublicUrl(data.path);
+
+          const fileUrl = publicUrlData?.publicUrl || `${supabaseUrl}/storage/v1/object/public/print-files/${data.path}`;
+
+          // Insert job record - adjust fields based on your table schema
+          const { error: insertError } = await supabase.from("jobs").insert({
+            file_url: fileUrl,
+            status: "pending"
+            // Note: If your table has file_name, file_size, file_type columns, uncomment below:
+            // file_name: file.name,
+            // file_size: file.size,
+            // file_type: file.type
+          });
+
+          if (insertError) {
+            console.error(`Database error for ${file.name}:`, insertError);
+            errors.push(`${file.name}: ${insertError.message || JSON.stringify(insertError)}`);
+            errorCount++;
+            // Try to clean up uploaded file
+            await supabase.storage.from("printfiles").remove([data.path]);
+            continue;
+          }
+
+          successCount++;
+        } catch (err) {
+          console.error(`Error processing ${file.name}:`, err);
+          errors.push(`${file.name}: ${err.message || JSON.stringify(err)}`);
+          errorCount++;
         }
+      }
 
-        const fileUrl = `${supabaseUrl}/storage/v1/object/public/print-files/${data.path}`;
-        const { error: insertError } = await supabase.from("jobs").insert({
-          file_url: fileUrl,
-          printer_id: printerId,
-          status: "pending"
-        });
+      // Update progress to 100%
+      updateLoaderProgress(100, "Завершение...");
 
-        if (insertError) {
-          throw insertError;
-        }
+      // Small delay to show completion
+      await new Promise(resolve => setTimeout(resolve, 300));
 
-        statusEl.textContent = "✅ Sent to printer!";
-        fileInput.value = "";
-      } catch (err) {
-        console.error(err);
-        statusEl.textContent = "❌ Upload failed";
-      } finally {
-        uploadBtn.disabled = false;
+      hideLoader();
+      uploadBtn.disabled = false;
+      uploadBtn.classList.remove("loading");
+
+      // Show results with toast notifications
+      if (successCount === selectedFiles.length) {
+        showToast(
+          "success",
+          "Успешно отправлено!",
+          `Все ${successCount} файл(ов) успешно отправлены на печать`,
+          6000
+        );
+        selectedFiles = [];
+        updatePreviews();
+        statusEl.innerHTML = "";
+      } else if (successCount > 0) {
+        showToast(
+          "warning",
+          "Частично загружено",
+          `Загружено ${successCount} из ${selectedFiles.length} файл(ов). ${errorCount} не удалось загрузить.`,
+          8000
+        );
+        showStatus(
+          `⚠️ Загружено ${successCount} файл(ов), ${errorCount} не удалось. Ошибки: ${errors.join("; ")}`,
+          true
+        );
+      } else {
+        showToast(
+          "error",
+          "Ошибка загрузки",
+          `Не удалось загрузить файлы. Проверьте консоль для подробностей.`,
+          8000
+        );
+        showStatus(
+          `❌ Ошибка загрузки всех файлов. Ошибки: ${errors.join("; ")}`,
+          true
+        );
       }
     });
+
+    // Initialize
+    updatePreviews();
   </script>
 </body>
 </html>
